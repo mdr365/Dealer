@@ -1,0 +1,61 @@
+{
+  "entities": {
+    "Product": {
+      "title": "Product",
+      "description": "Dealership inventory product",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "category": { "type": "string" },
+        "price": { "type": "number" },
+        "stock": { "type": "number" },
+        "unit": { "type": "string" }
+      },
+      "required": ["id", "name", "price", "stock"]
+    },
+    "Sale": {
+      "title": "Sale",
+      "description": "Sales transaction record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "productId": { "type": "string" },
+        "productName": { "type": "string" },
+        "quantity": { "type": "number" },
+        "totalPrice": { "type": "number" },
+        "customerName": { "type": "string" },
+        "date": { "type": "string", "format": "date-time" },
+        "isCredit": { "type": "boolean" },
+        "paidAmount": { "type": "number" }
+      },
+      "required": ["id", "productId", "quantity", "totalPrice", "customerName", "date"]
+    },
+    "Customer": {
+      "title": "Customer",
+      "description": "Customer credit information",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "phone": { "type": "string" },
+        "totalDue": { "type": "number" }
+      },
+      "required": ["id", "name", "totalDue"]
+    }
+  },
+  "firestore": {
+    "/products/{productId}": {
+      "schema": "Product",
+      "description": "Inventory products"
+    },
+    "/sales/{saleId}": {
+      "schema": "Sale",
+      "description": "Sales records"
+    },
+    "/customers/{customerId}": {
+      "schema": "Customer",
+      "description": "Customer credit ledgers"
+    }
+  }
+}

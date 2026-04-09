@@ -1,0 +1,57 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+    function isValidProduct(data) {
+      return data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
+             data.price is number && data.price >= 0 &&
+             data.stock is number &&
+             data.unit is string;
+    }
+
+    function isValidSale(data) {
+      return data.productName is string &&
+             data.quantity is number && data.quantity > 0 &&
+             data.totalPrice is number && data.totalPrice >= 0 &&
+             data.customerName is string && data.customerName.size() > 0 &&
+             data.date is string &&
+             data.isCredit is bool &&
+             data.paidAmount is number && data.paidAmount >= 0;
+    }
+
+    function isValidCustomer(data) {
+      return data.name is string && data.name.size() > 0 &&
+             data.totalDue is number;
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+    match /products/{productId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAuthenticated() && isValidProduct(request.resource.data);
+      allow delete: if isAuthenticated();
+    }
+
+    match /sales/{saleId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && isValidSale(request.resource.data);
+      allow update, delete: if isAuthenticated();
+    }
+
+    match /customers/{customerId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAuthenticated() && isValidCustomer(request.resource.data);
+      allow delete: if isAuthenticated();
+    }
+  }
+}
